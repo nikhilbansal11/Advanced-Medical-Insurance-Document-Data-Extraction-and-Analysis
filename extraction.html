@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Data in Seconds - Medical Data Extraction</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+        }
+
+        .preview-section {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .loading-spinner {
+            display: none;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .download-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .results-table th, .results-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .results-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: var(--background-color);
+        }
+
+        :root {
+            /* Light theme variables */
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --card-background: white;
+        }
+
+        /* Dark theme variables */
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --secondary-color: #60a5fa;
+            --background-color: #1a1a1a;
+            --text-color: #e5e7eb;
+            --border-color: #374151;
+            --card-background: #2d2d2d;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--card-background);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-color);
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .upload-section {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+        }
+
+        .preview-section {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+        }
+
+        .results-section {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .loading-spinner {
+            display: none;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .nav-btn {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+     <!-- Navigation bar -->
+     <nav class="nav-container">
+        <div class="nav-buttons">
+            <!-- Add your page links as placeholders in the href attributes -->
+            <a href="./homepage.html" class="btn nav-btn">Home Page</a>
+            <a href="/innovation" class="btn nav-btn">Innovation</a>
+            <a href="./dashboard.html" class="btn nav-btn">Data Dashboard</a>
+        </div>
+        <button id="themeToggle" class="theme-toggle">🌞</button>
+    </nav>
+
+    <div class="container">
+        <h1>Extract Data in Seconds</h1>
+        
+        <div class="upload-section">
+            <div class="drop-zone" id="dropZone">
+                <p>Drag and drop your medical document here or click to upload</p>
+                <input type="file" id="fileInput" hidden accept="image/*">
+                <button class="btn">Choose File</button>
+            </div>
+        </div>
+
+        <div class="preview-section" id="previewSection" style="display: none;">
+            <h2>Uploaded Image</h2>
+            <img id="previewImage" class="preview-image" alt="Preview">
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p>Processing your document...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <input type="text" class="search-bar" placeholder="Search within results..." id="searchInput">
+            
+            <div id="tableResults"></div>
+            
+            <div class="download-options">
+                <button class="btn" id="downloadPDF">Download PDF</button>
+                <button class="btn" id="downloadExcel">Download Excel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultsSection = document.getElementById('resultsSection');
+        const tableResults = document.getElementById('tableResults');
+        const searchInput = document.getElementById('searchInput');
+        const previewSection = document.getElementById('previewSection');
+        const previewImage = document.getElementById('previewImage');
+
+
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'light' ? '🌞' : '🌙';
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggle.textContent = newTheme === 'light' ? '🌞' : '🌙';
+        });
+
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--primary-color)';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) processImage(file);
+        });
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) processImage(e.target.files[0]);
+        });
+
+        function processImage(file) {
+    // Display image preview
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        // Display preview
+        previewImage.src = e.target.result;
+        previewSection.style.display = 'block';
+
+        // Get base64 string (remove data:image/jpeg;base64, prefix)
+        const base64Image = e.target.result.split(',')[1];
+        
+        // Show loading spinner
+        loadingSpinner.style.display = 'flex';
+        resultsSection.style.display = 'none';
+
+        // Prepare the JSON payload with single key as requested
+        const payload = {
+            image_base64: base64Image
+        };
+
+        // Send request to API
+        fetch('https://medimagemodel.onrender.com/process_image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            loadingSpinner.style.display = 'none';
+            resultsSection.style.display = 'block';
+            displayResults(data);
+        })
+        .catch(error => {
+            loadingSpinner.style.display = 'none';
+            console.error('Error:', error);
+            tableResults.innerHTML = `<div class="error-message">Error processing the image: ${error.message}</div>`;
+        });
+    };
+
+    // Handle reader errors
+    reader.onerror = function(error) {
+        console.error('Error reading file:', error);
+        tableResults.innerHTML = '<div class="error-message">Error reading the image file.</div>';
+    };
+
+    // Read the file as base64
+    reader.readAsDataURL(file);
+}
+        // Add error message styling
+        const style = document.createElement('style');
+        style.textContent = `
+            .error-message {
+                color: #dc2626;
+                padding: 1rem;
+                background-color: #fef2f2;
+                border: 1px solid #fee2e2;
+                border-radius: 0.5rem;
+                margin: 1rem 0;
+            }
+        `;
+        document.head.appendChild(style);
+
+        function displayResults(data) {
+            // Sort data to bring entries with values to the top
+            const entries = Object.entries(data).sort((a, b) => {
+                const aHasValue = a[1] !== null && a[1] !== '';
+                const bHasValue = b[1] !== null && b[1] !== '';
+                return bHasValue - aHasValue;
+            });
+
+            // Create table
+            const table = document.createElement('table');
+            table.className = 'results-table';
+            
+            // Add header
+            const header = table.createTHead();
+            const headerRow = header.insertRow();
+            ['Field', 'Value'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                headerRow.appendChild(th);
+            });
+
+            // Add data rows
+            const tbody = table.createTBody();
+            entries.forEach(([key, value]) => {
+                const row = tbody.insertRow();
+                const keyCell = row.insertCell();
+                const valueCell = row.insertCell();
+                
+                keyCell.textContent = key;
+                valueCell.textContent = value || 'N/A';
+            });
+
+            tableResults.innerHTML = '';
+            tableResults.appendChild(table);
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.results-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Download handlers
+        document.getElementById('downloadPDF').addEventListener('click', () => {
+    // Create new jsPDF instance with landscape orientation
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Add title to PDF
+    doc.setFontSize(16);
+    doc.text('Medical Data Extraction Results', 15, 15);
+
+    // Get the table data
+    const table = document.querySelector('.results-table');
+    
+    // Convert table to PDF using autoTable
+    doc.autoTable({
+        html: '.results-table',
+        startY: 25,
+        theme: 'grid',
+        styles: {
+            fontSize: 10,
+            cellPadding: 3,
+            overflow: 'linebreak'
+        },
+        headStyles: {
+            fillColor: [37, 99, 235],
+            textColor: 255,
+            fontSize: 12,
+            fontStyle: 'bold'
+        },
+        columnStyles: {
+            0: { cellWidth: 80 }, // Field column
+            1: { cellWidth: 'auto' } // Value column
+        },
+        margin: { top: 25, right: 15, bottom: 15, left: 15 }
+    });
+
+    // Save the PDF
+    doc.save('medical-data-extraction.pdf');
+});
+
+        document.getElementById('downloadExcel').addEventListener('click', () => {
+            // Implementation for Excel download
+            const table = document.querySelector('.results-table');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Medical Data');
+            XLSX.writeFile(wb, 'medical-data.xlsx');
+        });
+    </script>
+    <!-- Add required libraries for export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> 
+</body>
+</html>
